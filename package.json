@@ -1,5 +1,5 @@
 {
-  "name": "express-openapi-validator",
+  "name": "@edrillingsolutions/express-openapi-validator",
   "version": "5.0.1",
   "description": "Automatically validate API requests and responses with OpenAPI 3 and Express.",
   "main": "dist/index.js",
@@ -16,8 +16,12 @@
     "test:reset": "rm -rf node_modules && npm i && npm run compile && npm t",
     "commit": "cz"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "repository": {
-    "url": "https://github.com/cdimascio/express-openapi-validator"
+    "type": "git",
+    "url": "git@github.com:eDrillingSolutions/express-openapi-validator.git"
   },
   "keywords": [
     "openapi",
