@@ -23,7 +23,7 @@ export class OpenAPISchemaValidator {
       coerceTypes: false,
       useDefaults: false,
       // Strict enforcement is nice, but schema is controlled by this library and known to be valid
-      strict: false,
+      strict: 'log',
     };
     if (!opts.validateApiSpec) {
       options.validateSchema = false;

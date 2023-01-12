@@ -61,18 +61,19 @@ export class AjvOptions {
     }
 
     const options: Options = {
-      strict: false,
+      strict: 'log',
       strictNumbers: true,
       strictTuples: true,
       allowUnionTypes: false,
       validateSchema: false, // this is true for startup validation, thus it can be bypassed here
       coerceTypes,
-      useDefaults: true,
+      useDefaults: 'empty',
       removeAdditional: false,
-      validateFormats: validateFormats,
+      validateFormats,
       formats,
       serDesMap,
       ajvFormats,
+      discriminator: true,
     };
 
     return options;
