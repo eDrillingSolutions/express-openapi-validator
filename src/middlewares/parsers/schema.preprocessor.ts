@@ -16,7 +16,6 @@ interface TraversalStates {
 }
 
 interface TraversalState {
-  discriminator: object;
   kind: 'req' | 'res';
   path: string[];
 }
@@ -212,8 +211,8 @@ export class SchemaPreprocessor {
     };
 
     const initOpts = (): TraversalStates => ({
-      req: { discriminator: {}, kind: 'req', path: [] },
-      res: { discriminator: {}, kind: 'res', path: [] },
+      req: { kind: 'req', path: [] },
+      res: { kind: 'res', path: [] },
     });
 
     for (const node of nodes.schemas) {
@@ -256,100 +255,7 @@ export class SchemaPreprocessor {
         // This null check should no longer be necessary
         this.handleSerDes(pschema, nschema, options);
         this.handleReadonly(pschema, nschema, options);
-        this.processDiscriminator(pschema, nschema, options);
       }
-    }
-  }
-
-  private processDiscriminator(parent: Schema, schema: Schema, opts: any = {}) {
-    const o = opts.discriminator;
-    const schemaObj = <OpenAPIV3.CompositionSchemaObject>schema;
-    const xOf = schemaObj.oneOf ? 'oneOf' : schemaObj.anyOf ? 'anyOf' : null;
-
-    if (xOf && schemaObj.discriminator?.propertyName && !o.discriminator) {
-      const options = schemaObj[xOf].flatMap((refObject) => {
-        if (refObject['$ref'] === undefined) {
-          return [];
-        }
-        const keys = this.findKeys(
-          schemaObj.discriminator.mapping,
-          (value) => value === refObject['$ref'],
-        );
-        const ref = this.getKeyFromRef(refObject['$ref']);
-        return keys.length > 0
-          ? keys.map((option) => ({ option, ref }))
-          : [{ option: ref, ref }];
-      });
-      o.options = options;
-      o.discriminator = schemaObj.discriminator?.propertyName;
-      o.properties = {
-        ...(o.properties ?? {}),
-        ...(schemaObj.properties ?? {}),
-      };
-      o.required = Array.from(
-        new Set((o.required ?? []).concat(schemaObj.required ?? [])),
-      );
-    }
-
-    if (xOf) return;
-
-    if (o.discriminator) {
-      o.properties = {
-        ...(o.properties ?? {}),
-        ...(schemaObj.properties ?? {}),
-      };
-      o.required = Array.from(
-        new Set((o.required ?? []).concat(schemaObj.required ?? [])),
-      );
-
-      const ancestor: any = parent;
-      const ref = opts.originalSchema.$ref;
-
-      if (!ref) return;
-
-      const options = this.findKeys(
-        ancestor.discriminator?.mapping,
-        (value) => value === ref,
-      );
-      const refName = this.getKeyFromRef(ref);
-      if (options.length === 0 && ref) {
-        options.push(refName);
-      }
-
-      if (options.length > 0) {
-        const newSchema = JSON.parse(JSON.stringify(schemaObj));
-
-        const newProperties = {
-          ...(o.properties ?? {}),
-          ...(newSchema.properties ?? {}),
-        };
-        if (Object.keys(newProperties).length > 0) {
-          newSchema.properties = newProperties;
-        }
-
-        newSchema.required = o.required;
-        if (newSchema.required.length === 0) {
-          delete newSchema.required;
-        }
-
-        // Expose `_discriminator` to consumers without exposing to AJV
-        Object.defineProperty(ancestor, '_discriminator', {
-          enumerable: false,
-          value: ancestor._discriminator ?? {
-            validators: {},
-            options: o.options,
-            property: o.discriminator,
-          },
-        });
-
-        for (const option of options) {
-          ancestor._discriminator.validators[option] =
-            this.ajv.compile(newSchema);
-        }
-      }
-      //reset data
-      o.properties = {};
-      delete o.required;
     }
   }
 

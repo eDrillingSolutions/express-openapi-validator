@@ -169,17 +169,9 @@ export class RequestValidator {
         this.multipartNested(req, schemaBody);
       }
 
-      const discriminator = schemaBody?.properties?.body?._discriminator;
-      const discriminatorValidator = this.discriminatorValidator(
-        req,
-        discriminator,
-      );
-
-      const validatorBody = discriminatorValidator ?? validator.validatorBody;
       const valid = validator.validatorGeneral(data);
-      const validBody = validatorBody(
-        discriminatorValidator ? data.body : data,
-      );
+      const validatorBody = validator.validatorBody;
+      const validBody = validatorBody(data);
 
       if (valid && validBody) {
         next();
@@ -216,23 +208,6 @@ export class RequestValidator {
     return null;
   }
 
-  private discriminatorValidator(req, discriminator) {
-    if (discriminator) {
-      const { options, property, validators } = discriminator;
-      const discriminatorValue = req.body[property]; // TODO may not always be in this position
-      if (options.find((o) => o.option === discriminatorValue)) {
-        return validators[discriminatorValue];
-      } else {
-        throw new BadRequest({
-          path: req.path,
-          message: `'${property}' must be equal to one of the allowed values: ${options
-            .map((o) => o.option)
-            .join(', ')}.`,
-        });
-      }
-    }
-    return null;
-  }
   private processQueryParam(query: object, schema, whiteList: string[] = []) {
     const entries = Object.entries(schema.properties ?? {});
     let keys = [];

@@ -280,8 +280,6 @@ export namespace OpenAPIV3 {
     oneOf?: Array<ReferenceObject | SchemaObject>;
     anyOf?: Array<ReferenceObject | SchemaObject>;
     not?: ReferenceObject | SchemaObject;
-    // OpenAPI-specific properties
-    discriminator?: DiscriminatorObject;
   }
 
   interface BaseSchemaObject<T> {
@@ -323,12 +321,6 @@ export namespace OpenAPIV3 {
     // Express-openapi-validator specific properties
     componentId?: string;
   }
-
-  export interface DiscriminatorObject {
-    propertyName: string;
-    mapping?: { [value: string]: string };
-  }
-
   export interface XMLObject {
     name?: string;
     namespace?: string;
