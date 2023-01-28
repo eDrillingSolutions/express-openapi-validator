@@ -1,4 +1,6 @@
 import Ajv, { ValidateFunction } from 'ajv';
+import * as cloneDeep from 'lodash.clonedeep';
+
 import { createRequestAjv } from '../framework/ajv';
 import {
   ContentType,
@@ -171,6 +173,9 @@ export class RequestValidator {
 
       const valid = validator.validatorGeneral(data);
       const validatorBody = validator.validatorBody;
+
+      req.originalBody = cloneDeep(req.body)
+
       const validBody = validatorBody(data);
 
       if (valid && validBody) {

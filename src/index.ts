@@ -43,3 +43,9 @@ function openapiValidator(options: OpenApiValidatorOpts) {
     }).load(),
   );
 }
+
+declare module 'express-serve-static-core' {
+  interface Request {
+      originalBody?: unknown;
+  }
+}
