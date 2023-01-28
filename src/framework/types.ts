@@ -49,6 +49,8 @@ export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
   coerceTypes?: boolean | 'array';
   removeAdditional?: boolean | 'all' | 'failing';
+  strict?: boolean | "log";
+  useDefaults?: boolean | "empty";
 };
 
 export type ValidateResponseOpts = {

@@ -28,14 +28,20 @@ export class AjvOptions {
   }
 
   get request(): RequestValidatorOptions {
-    const { allowUnknownQueryParameters, coerceTypes, removeAdditional } = <
-      ValidateRequestOpts
-    >this.options.validateRequests;
+    const {
+      allowUnknownQueryParameters,
+      coerceTypes,
+      removeAdditional,
+      strict,
+      useDefaults,
+    } = <ValidateRequestOpts>this.options.validateRequests;
     return {
       ...this.baseOptions(),
       allowUnknownQueryParameters,
       coerceTypes,
       removeAdditional,
+      strict,
+      useDefaults,
     };
   }
 
@@ -61,13 +67,13 @@ export class AjvOptions {
     }
 
     const options: Options = {
-      strict: 'log',
+      strict: false,
       strictNumbers: true,
       strictTuples: true,
       allowUnionTypes: false,
       validateSchema: false, // this is true for startup validation, thus it can be bypassed here
       coerceTypes,
-      useDefaults: 'empty',
+      useDefaults: true,
       removeAdditional: false,
       validateFormats,
       formats,
